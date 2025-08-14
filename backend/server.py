@@ -10,10 +10,10 @@ supabase: Client = create_client(url, key)
 
 app = FastAPI()
 
-# IMPORTANT: This allows your frontend to talk to your backend
+# THIS IS THE CORRECTED SECTION
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://almanack007.github.io"], # Your live frontend URL
+    allow_origins=["*"],  # This allows requests from ANY website
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -21,13 +21,12 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"Hello": "Your FastAPI backend is live!"}
+    return {"Hello": "Your FastAPI backend is live and running!"}
 
 # The API route your frontend is looking for
 @app.get("/api/kpis")
 def get_kpis():
     # For now, we return DUMMY data to prove it works.
-    # Later, you will replace this with a real query to your Supabase database.
     print("KPIs endpoint was called successfully!")
     return {
         "callVolume": 1240,
@@ -49,3 +48,9 @@ def get_kpis():
             { "day": "Sun", "calls": 150 }
         ]
     }
+
+# We add this dummy route as well since you clicked on it
+@app.get("/api/calls")
+def get_calls():
+    print("Calls endpoint was called successfully!")
+    return {"items": []}
