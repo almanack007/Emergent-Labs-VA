@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   LineChart,
   Line,
@@ -14,20 +14,26 @@ import {
 } from "recharts";
 import "./App.css";
 
+// THIS IS THE CORRECTED FUNCTION
 const useBackendUrl = () => {
-  const fromImport = import.meta?.env?.REACT_APP_BACKEND_URL;
-  const fromProcess = typeof process !== "undefined" ? process?.env?.REACT_APP_BACKEND_URL : undefined;
-  return fromImport || fromProcess || "";
+  // Read the variable we defined in our .env.production file
+  const fromImport = import.meta?.env?.VITE_API_BASE_URL;
+  // Fallback to empty string if nothing is provided via env
+  return fromImport || "";
 };
 
 const fetcher = async (base, path) => {
-  const url = base ? `${base}${path}` : `${path}`;
+  const url = base ? `${base}${path}` : `${path}`; // when base is empty, rely on relative '/api/*'
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Request failed: ${res.status}`);
   return res.json();
 };
 
-const Section = ({ children }) => <div className="p-4 md:p-6 space-y-6">{children}</div>;
+const Section = ({ children }) => (
+  <div className="p-4 md:p-6 space-y-6">
+    {children}
+  </div>
+);
 
 function Dashboard({ baseUrl }) {
   const [kpis, setKpis] = useState(null);
@@ -278,9 +284,10 @@ function Toggle({ enabled, onChange }) {
   );
 }
 
-function Settings({ baseUrl }) {
+function Settings() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const baseUrl = useBackendUrl();
 
   useEffect(() => {
     fetcher(baseUrl, "/api/settings").then(setData).catch(setError);
