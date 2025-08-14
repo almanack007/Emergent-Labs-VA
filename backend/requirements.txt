@@ -1,4 +1,5 @@
-flask
+fastapi
 gunicorn
+uvicorn
 supabase
 python-dotenv
