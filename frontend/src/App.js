@@ -14,11 +14,12 @@ import {
 } from "recharts";
 import "./App.css";
 
+// THIS IS THE CORRECTED FUNCTION
 const useBackendUrl = () => {
-  const fromImport = import.meta?.env?.REACT_APP_BACKEND_URL;
-  const fromProcess = typeof process !== "undefined" ? process?.env?.REACT_APP_BACKEND_URL : undefined;
-  // Fallback to relative '/api' only if nothing is provided via env (keeps ingress rules intact)
-  return fromImport || fromProcess || "";
+  // Read the variable we defined in our .env.production file
+  const fromImport = import.meta?.env?.VITE_API_BASE_URL;
+  // Fallback to empty string if nothing is provided via env
+  return fromImport || "";
 };
 
 const fetcher = async (base, path) => {
