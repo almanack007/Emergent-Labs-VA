@@ -15,15 +15,10 @@ import {
 import "./App.css";
 
 // THIS IS THE CORRECTED FUNCTION
-const useBackendUrl = () => {
-  // Read the variable we defined in our .env.production file
-  const fromImport = import.meta?.env?.VITE_API_BASE_URL;
-  // Fallback to empty string if nothing is provided via env
-  return fromImport || "";
-};
-
-const fetcher = async (base, path) => {
-  const url = base ? `${base}${path}` : `${path}`; // when base is empty, rely on relative '/api/*'
+const fetcher = async (path) => {
+  // We are now hardcoding the correct backend URL to guarantee it works.
+  const baseUrl = "https://emergent-labs-va.onrender.com";
+  const url = `${baseUrl}${path}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Request failed: ${res.status}`);
   return res.json();
@@ -35,13 +30,13 @@ const Section = ({ children }) => (
   </div>
 );
 
-function Dashboard({ baseUrl }) {
+function Dashboard() {
   const [kpis, setKpis] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetcher(baseUrl, "/api/kpis").then(setKpis).catch(setError);
-  }, [baseUrl]);
+    fetcher("/api/kpis").then(setKpis).catch(setError);
+  }, []);
 
   if (error) return <div className="text-red-600">Failed to load KPIs</div>;
   if (!kpis) return <div className="text-gray-500">Loading...</div>;
@@ -128,13 +123,13 @@ function Dashboard({ baseUrl }) {
   );
 }
 
-function CallRecords({ baseUrl }) {
+function CallRecords() {
   const [records, setRecords] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetcher(baseUrl, "/api/calls").then((d) => setRecords(d.items)).catch(setError);
-  }, [baseUrl]);
+    fetcher("/api/calls").then((d) => setRecords(d.items)).catch(setError);
+  }, []);
 
   if (error) return <div className="text-red-600">Failed to load calls</div>;
 
@@ -170,13 +165,13 @@ function CallRecords({ baseUrl }) {
   );
 }
 
-function ServiceInsights({ baseUrl }) {
+function ServiceInsights() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetcher(baseUrl, "/api/service-insights").then(setData).catch(setError);
-  }, [baseUrl]);
+    fetcher("/api/service-insights").then(setData).catch(setError);
+  }, []);
 
   if (error) return <div className="text-red-600">Failed to load service insights</div>;
   if (!data) return <div className="text-gray-500">Loading...</div>;
@@ -206,13 +201,13 @@ function ServiceInsights({ baseUrl }) {
   );
 }
 
-function PostCallSummaries({ baseUrl }) {
+function PostCallSummaries() {
   const [summaries, setSummaries] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetcher(baseUrl, "/api/summaries").then((d) => setSummaries(d.items)).catch(setError);
-  }, [baseUrl]);
+    fetcher("/api/summaries").then((d) => setSummaries(d.items)).catch(setError);
+  }, []);
 
   if (error) return <div className="text-red-600">Failed to load summaries</div>;
 
@@ -245,13 +240,13 @@ function PostCallSummaries({ baseUrl }) {
   );
 }
 
-function Integrations({ baseUrl }) {
+function Integrations() {
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetcher(baseUrl, "/api/integrations").then((d) => setItems(d.items)).catch(setError);
-  }, [baseUrl]);
+    fetcher("/api/integrations").then((d) => setItems(d.items)).catch(setError);
+  }, []);
 
   if (error) return <div className="text-red-600">Failed to load integrations</div>;
 
@@ -287,11 +282,10 @@ function Toggle({ enabled, onChange }) {
 function Settings() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  const baseUrl = useBackendUrl();
 
   useEffect(() => {
-    fetcher(baseUrl, "/api/settings").then(setData).catch(setError);
-  }, [baseUrl]);
+    fetcher("/api/settings").then(setData).catch(setError);
+  }, []);
 
   if (error) return <div className="text-red-600">Failed to load settings</div>;
   if (!data) return <div className="text-gray-500">Loading...</div>;
@@ -340,22 +334,21 @@ export default function App() {
     "Settings & Compliance",
   ];
   const [active, setActive] = useState(tabs[0]);
-  const baseUrl = useBackendUrl();
 
   const render = () => {
     switch (active) {
       case "Dashboard":
-        return <Dashboard baseUrl={baseUrl} />;
+        return <Dashboard />;
       case "Call Records":
-        return <CallRecords baseUrl={baseUrl} />;
+        return <CallRecords />;
       case "Service Insights":
-        return <ServiceInsights baseUrl={baseUrl} />;
+        return <ServiceInsights />;
       case "Post-Call Summaries":
-        return <PostCallSummaries baseUrl={baseUrl} />;
+        return <PostCallSummaries />;
       case "Integrations & Workflows":
-        return <Integrations baseUrl={baseUrl} />;
+        return <Integrations />;
       case "Settings & Compliance":
-        return <Settings baseUrl={baseUrl} />;
+        return <Settings />;
       default:
         return null;
     }
