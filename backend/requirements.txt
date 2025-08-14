@@ -1,5 +1,4 @@
 fastapi
-uvicorn[standard]
-pydantic
-python-dotenv
-motor
+gunicorn
+uvicorn
+supabase-py
